@@ -12,9 +12,9 @@ import {
     SimpleGrid,
     Center,
     Button,
-    Link,
+    // Link,
 } from '@chakra-ui/react';
-import { Link as RouterLink } from 'react-router-dom';
+// import { Link as RouterLink } from 'react-router-dom';
 import Data from "../../Data/data.json";
 
 const Results = () => {
@@ -27,78 +27,135 @@ const Results = () => {
     const quiz1Total = Object.keys(Data.process_text_questions.questions).length;
     const quiz2Total = Object.keys(Data.process_summary_questions.questions).length;
 
-    const totalQuestions = quiz1Total + quiz2Total;
-    const totalCorrect = quiz1Score.rightAnswers + quiz2Score.rightAnswers;
-    const percentageScore = (totalCorrect * 100 / totalQuestions).toFixed(2);
+    const percentageScoreQ1 = (quiz1Score.rightAnswers * 100 / quiz1Total).toFixed(2);
+    const percentageScoreQ2 = (quiz2Score.rightAnswers * 100 / quiz2Total).toFixed(2);
+    const best = percentageScoreQ2 >= percentageScoreQ1 ? 'lexia' : 'process';
 
-    let scoreMessage = "";
-    if (percentageScore >= 90) {
-        scoreMessage = "Excelente!";
-    } else if (percentageScore >= 70) {
-        scoreMessage = "Bom!";
-    } else if (percentageScore >= 50) {
-        scoreMessage = "Regular";
+    let scoreMessageQ1 = "";
+    if (percentageScoreQ1 >= 90) {
+        scoreMessageQ1 = "Excelente!";
+    } else if (percentageScoreQ1 >= 70) {
+        scoreMessageQ1 = "Bom!";
+    } else if (percentageScoreQ1 >= 50) {
+        scoreMessageQ1 = "Regular";
     } else {
-        scoreMessage = "Precisa melhorar mais, boa sorte na próxima vez.";
+        scoreMessageQ1 = "Nada bem.";
     }
 
+    let scoreMessageQ2 = "";
+    if (percentageScoreQ2 >= 90) {
+        scoreMessageQ2 = "Excelente!";
+    } else if (percentageScoreQ2 >= 70) {
+        scoreMessageQ2 = "Bom!";
+    } else if (percentageScoreQ2 >= 50) {
+        scoreMessageQ2 = "Regular";
+    } else {
+        scoreMessageQ2 = "Nada bem.";
+    }
+
+    let errorQuiz1 = quiz1Total - quiz1Score.rightAnswers;
+    let errorQuiz2 = quiz2Total - quiz2Score.rightAnswers;
+
     const chartData = [
-        ['Quiz', 'Score'],
-        ['Quiz 1', quiz1Score.rightAnswers],
-        ['Quiz 2', quiz2Score.rightAnswers],
+        ['Processo', 'Score'],
+        ['Acerto', quiz1Score.rightAnswers],
+        ['Erro', errorQuiz1],
+    ];
+    const chartData2 = [
+        ['Lexia', 'Score'],
+        ['Acerto', quiz2Score.rightAnswers],
+        ['Erro', errorQuiz2],
     ];
 
     const chartOptions = {
-        title: 'Quiz Results',
+        title: 'Processo',
+        is3D: true,
+    };
+
+    const chartOptions2 = {
+        title: 'Lexia',
         is3D: true,
     };
 
     return (
         <Center h="100vh">
             <Box
-                p={8}
+                p={6}
                 maxWidth="600px"
                 borderWidth={1}
                 borderRadius={8}
                 boxShadow="lg"
                 bg="purple.500"
                 color="white"
+                m={1}
             >
-                <Heading as="h2" size="xl" mb={4}>Your Score</Heading>
+                <Heading as="h2" size="xl" mb={4} >Sua Pontuação</Heading>
 
-                <Text fontSize="6xl" fontWeight="bold" mb={2}>
-                    {percentageScore} %
-                </Text>
-                <Text mb={4} color={percentageScore >= 50 ? 'green' : 'red'}>
-                    {scoreMessage}
-                </Text>
+                <div style={{display: 'flex'}}>
+                    <div style={{ border: best === 'process' ? '1.5px solid rgb(255, 0, 255)' : 'none', marginBottom: '30px', padding: '15px', borderRadius: '15px', boxShadow:  best === 'process' ? '2px 1px 2.5px rgb(255, 0, 255)' : 'none'}}>
+                        <Text mb={1} color={'white'} fontWeight="bold" fontSize="3xl">
+                            Processo
+                        </Text>
 
-                <Chart
-                    chartType="PieChart"
-                    data={chartData}
-                    options={chartOptions}
-                    width={'600px'}
-                    height={'400px'}
-                />
+                        <Text fontSize="2xl" fontWeight="bold" mb={2}>
+                            {percentageScoreQ1} %
+                        </Text>
+                        <Text mb={1} color={percentageScoreQ1 >= 50 ? 'white' : 'yellow'}>
+                            {scoreMessageQ1}
+                        </Text>
+                    </div>
+                    <div style={{marginLeft: '30px', border: best === 'lexia' ? '1.5px solid rgb(255, 0, 255)' : 'none', marginBottom: '30px', padding: '15px', borderRadius: '15px', boxShadow:  best === 'lexia' ? '2px 1px 2.5px rgb(255, 0, 255)' : 'none'}}>
+                        <Text mb={1} color={'white'} fontWeight="bold" fontSize="3xl">
+                            Lexia
+                        </Text>
+
+                        <Text fontSize="2xl" fontWeight="bold" mb={2}>
+                            {percentageScoreQ2} %
+                        </Text>
+                        <Text mb={1} color={percentageScoreQ2 >= 50 ? 'white' : 'yellow'}>
+                            {scoreMessageQ2}
+                        </Text>
+                    </div>
+                </div>
+
+                <div style={{display: 'flex'}}>
+                    <Chart
+                        chartType="PieChart"
+                        data={chartData}
+                        options={chartOptions}
+                        width={'150px'}
+                        height={'100px'}
+                        p={1}
+                    />
+
+                    <Chart
+                        chartType="PieChart"
+                        data={chartData2}
+                        options={chartOptions2}
+                        width={'150px'}
+                        height={'100px'}
+                        p={1}
+                    />
+                </div>
 
                 <SimpleGrid columns={2} spacing={4} mt={6}>
                     <Stat>
-                        <StatLabel>Acertos Quiz 1</StatLabel>
+                        <StatLabel>Acertos Processo</StatLabel>
                         <StatNumber>{quiz1Score.rightAnswers}</StatNumber>
-                        <StatHelpText>de {quiz1Total} perguntas</StatHelpText>
+                        <StatHelpText>entre {quiz1Total} perguntas</StatHelpText>
                     </Stat>
                     <Stat>
-                        <StatLabel>Acertos Quiz 2</StatLabel>
+                        <StatLabel>Acertos com Lexia</StatLabel>
                         <StatNumber>{quiz2Score.rightAnswers}</StatNumber>
-                        <StatHelpText>de {quiz2Total} perguntas</StatHelpText>
+                        <StatHelpText>entre {quiz2Total} perguntas</StatHelpText>
                     </Stat>
                 </SimpleGrid>
 
 
                 <SimpleGrid columns={4} spacing={4} mt={6}>
-                    <Link as={RouterLink} to="/about">
+                    <a href="/">
                         <Button colorScheme="purple" mt={4}>Home</Button>
-                    </Link>
+                    </a>
                 </SimpleGrid>
 
             </Box>

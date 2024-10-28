@@ -25,18 +25,17 @@ const QuizArea = ({ questions, onQuizComplete, onAnswerClick, quizType }) => {
     }, [currentQuestion, questions.length, onQuizComplete, quizType, navigate]);
 
     const handleOptionClick = useCallback((answer) => {
+
         setSelectedAnswer(answer);
         setShowFeedback(true);
 
         const isCorrect = answer === questions[currentQuestion].correct_answer;
-
         if (isCorrect) {
             onAnswerClick({ rightAnswers: 1 });
         } else {
             onAnswerClick({ wrongAnswers: 1 });
         }
-
-    }, [currentQuestion, questions, onAnswerClick, setSelectedAnswer, setShowFeedback]);
+    }, [currentQuestion, questions, onAnswerClick, setSelectedAnswer, setShowFeedback ]);
 
     const currentQuestionData = questions[currentQuestion];
 
