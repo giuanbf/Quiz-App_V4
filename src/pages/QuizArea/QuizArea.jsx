@@ -1,47 +1,71 @@
-import { useContext } from 'react';
-import QuestionBox from '../../components/QuestionBox/QuestionBox'
-import quizContext from '../../context/quizContext';
-import Scoreboard from '../ScoreBoard/Scoreboard';
+// QuizArea.jsx
+import { useState, useCallback } from 'react';
+import QuestionBox from '../../components/QuestionBox/QuestionBox';
+import { useNavigate } from 'react-router-dom';
+import { Button } from '@chakra-ui/react';
 
-const QuizArea = () => {
-    const context = useContext(quizContext)
-    const { questions, next, len, score } = context
+const QuizArea = ({ questions, onQuizComplete, onAnswerClick, quizType }) => {
+    const navigate = useNavigate();
+    const [currentQuestion, setCurrentQuestion] = useState(0);
+    const [selectedAnswer, setSelectedAnswer] = useState(null);
+    const [showFeedback, setShowFeedback] = useState(false);
 
-    const randomNumber = () => {
-        return Math.floor(Math.random() * 4);
-    }
-
-    const getOptions = (incorrectAns, correctAns) => {
-        let optionsArray = incorrectAns;
-        if (!optionsArray.includes(correctAns)) {
-            optionsArray.splice(randomNumber(), 0, correctAns);
-            return [optionsArray, correctAns];
+    const handleNext = useCallback(() => {
+        if (currentQuestion < questions.length - 1) {
+            setCurrentQuestion(prevQuestion => prevQuestion + 1);
+            setSelectedAnswer(null);
+            setShowFeedback(false);
         } else {
-            return [optionsArray, correctAns];
+            onQuizComplete();
+            if (quizType === 'initial') {
+                navigate('/summary');
+            } else if (quizType === 'summary') {
+                navigate('/results');
+            }
         }
-    }
+    }, [currentQuestion, questions.length, onQuizComplete, quizType, navigate]);
+
+    const handleOptionClick = useCallback((answer) => {
+        setSelectedAnswer(answer);
+        setShowFeedback(true);
+        onAnswerClick(answer);
+    }, [setSelectedAnswer, setShowFeedback, onAnswerClick]);
+
+    const currentQuestionData = questions[currentQuestion];
 
 
     return (
-        <>
-            {
-                //For fetch All the Questions 🔴
+        <div className="container p-4">
+            {currentQuestionData && (
+                <QuestionBox
+                    options={currentQuestionData.options}
+                    question={currentQuestionData.question}
+                    correctAnswer={currentQuestionData.correct_answer}
+                    onAnswerClick={handleOptionClick}
+                    selectedAnswer={selectedAnswer}
+                    onNextClick={handleNext}
+                    showNextButton={showFeedback}
+                    currentQuestion={currentQuestion}
+                    totalQuestions={questions.length}
+                    quizType={quizType}
+                    category={currentQuestionData.category || 'General Knowledge'}
+                />
+            )}
+            {showFeedback && (
+                <div>
+                    {selectedAnswer === currentQuestionData.correct_answer ? (
+                        <p style={{ color: 'green' }}>Correct!</p>
+                    ) : (
+                        <p style={{ color: 'red' }}>Incorrect. The correct answer was: {currentQuestionData.correct_answer}</p>
+                    )}
 
-                // questions.map((index) => {
-                //     const options = getOptions(index.incorrect_answers, index.correct_answer)
-                //     return <QuestionBox category={index.category} options={options} question={index.question} key={index.question} />
-                // })
+                    <Button onClick={handleNext} colorScheme="blue" m={2}>
+                        Next
+                    </Button>
+                </div>
+            )}
+        </div>
+    );
+};
 
-                (next <= len - 1)
-                    ?
-                    <div className="container p-4">
-                        < QuestionBox category={questions[next].category} options={getOptions(questions[next].incorrect_answers, questions[next].correct_answer)} question={questions[next].question} key={questions[next].question} />
-                    </div>
-                    :
-                    <Scoreboard total_que={len} wrong_que={score.wrongAnswers} correct_que={score.rightAnswers} />
-            }
-        </>
-    )
-}
-
-export default QuizArea
+export default QuizArea;

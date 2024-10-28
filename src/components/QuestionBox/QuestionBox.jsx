@@ -1,102 +1,110 @@
-import React, { useContext, useEffect, useState } from 'react'
-import './QuestionBox.css'
-import { Badge } from '@chakra-ui/react'
-import quizContext from '../../context/quizContext'
-import clickAudio from './../../Assets/select-sound.mp3'
+// QuestionBox.jsx
+import React, { useEffect, useState, useCallback, useRef } from 'react';
+import './QuestionBox.css';
+import { Badge, Button } from '@chakra-ui/react';
+import clickAudio from './../../Assets/select-sound.mp3';
+import { useNavigate } from 'react-router-dom';
 
-// #0b4b06 - bg
-// #53a24db5 - border
 const audio = new Audio(clickAudio);
 
-const QuestionBox = (props) => {
+const QuestionBox = ({
+    question,
+    options,
+    correctAnswer,
+    onAnswerClick,
+    selectedAnswer,
+    onNextClick,
+    showNextButton,
+    category,
+    currentQuestion,
+    totalQuestions,
+    quizType
+}) => {
+    const navigate = useNavigate();
+    const [timer, setTimer] = useState(5);
+    const timerIntervalRef = useRef(null);
 
-    const [selectedAns, setSelectedAns] = useState('')
-    const context = useContext(quizContext)
-    const { setScore, score, next, setNext, len, answerList, setAnswerList } = context
-    const { question, options, category } = props
-    //Here options[0] = options array and options[1] = correct answer
-    let i = -1
-    const alphabet = ['A', 'B', 'C', 'D']
-    // let currentAlpha = ''
 
-    const removeClass = () => {
-        let element = document.getElementsByClassName('q-box_body')
-        for (let i = 0; i < element.length; i++) {
-            for (let j = 0; j < element[i].children.length; j++) {
-                element[i].children[j].classList.remove('optionSelected')
-            }
-        }
-    }
+    const handleNextClick = useCallback(() => {
+        onNextClick();
+    }, [onNextClick]);
 
-    //Update the score 
-    const checkAnswer = (selectedAns) => {
-        if (selectedAns === '') {
-            return true;
-        } else if (selectedAns === options[1]) {
-            setScore({ ...score, 'rightAnswers': score.rightAnswers + 1 })
-        } else {
-            setScore({ ...score, 'wrongAnswers': score.wrongAnswers + 1 })
-        }
-    }
-
-    const handleOptionClick = (e) => {
-        audio.play();
-        removeClass()
-        setSelectedAns((e.target.innerText.slice(1)).trim())
-        const currentAlpha = e.target.innerText[0]
-        document.getElementById(currentAlpha).classList.add('optionSelected')
-    }
-
-    const handleNextQuestion = () => {
-        if (next <= len - 1) {
-            checkAnswer(selectedAns)
-            setNext(next + 1)
-            setSelectedAns('')
-        }
-        setAnswerList([...answerList, { 'question': question, 'options': options[0], 'id': `id${next}`, 'category': category, 'myAnswer': selectedAns, 'rightAnswer': options[1] }])
-    }
-
-    // for reverse timer
-    const [timer, setTimer] = useState(30)
 
     useEffect(() => {
-        let myInterval = setInterval(() => {
-            if (timer > 0) {
-                setTimer(timer - 1)
-            } else {
-                setNext(next + 1)
-            }
-        }, 1000)
-        return () => {
-            clearInterval(myInterval);
-        };
-    })
+        setTimer(5);
+
+        timerIntervalRef.current = setInterval(() => {
+            setTimer((prevTimer) => {
+                const newTimer = prevTimer - 1;
+
+                if (newTimer <= 0) {
+                    clearInterval(timerIntervalRef.current);
+
+                    if (currentQuestion + 1 === totalQuestions) {
+                        if (quizType === 'initial') {
+                            navigate('/summary');
+                        } else if (quizType === 'summary') {
+                            navigate('/results');
+                        }
+                    } else {
+                        handleNextClick();
+                    }
+                }
+                return newTimer;
+            });
+        }, 1000);
+
+        return () => clearInterval(timerIntervalRef.current);
+
+    }, [currentQuestion, totalQuestions, navigate, handleNextClick, quizType]);
+
+    const handleOptionClick = useCallback((option) => {
+        audio.play();
+        if (onAnswerClick) {
+            onAnswerClick(option);
+        }
+    }, [onAnswerClick]);
 
 
     return (
-        <>
-            <div className="q-box mx-auto my-5 p-4 text-center">
-                <div className="q-box_head">
-                    <div className="q-box_timer">{timer}s</div>
-                    <div className="q-question" dangerouslySetInnerHTML={{ __html: question }}></div>
-                </div>
-                <div className="q-box_body">
-                    {
-                        options[0].map((index) => {
-                            i++;
-                            return <div id={alphabet[i]} key={index} onClick={handleOptionClick} className="q-box_options">
-                                <div className='option-icon'>{alphabet[i]}</div> <div dangerouslySetInnerHTML={{ __html: index }}></div>
-                            </div>
-                        })
-                    }
-                </div>
-                <div className="d-flex flex-wrap justify-content-between align-items-center mx-3">
-                    <Badge colorScheme='purple'>{category}</Badge>
-                    <button onClick={handleNextQuestion} className="btn btn-primary m-2">{(next >= len - 1) ? 'Submit' : 'Next'}</button>
-                </div>
+        <div className="q-box mx-auto my-5 p-4 text-center">
+            <div className="q-box_head">
+                <div className="q-box_timer">{timer}s</div>
+                <div className="q-question" dangerouslySetInnerHTML={{ __html: question }} />
             </div>
-        </>
-    )
-}
+            <div className="q-box_body">
+                {options.map((option, index) => (
+                    <Button
+                        key={index}
+                        onClick={() => handleOptionClick(option)}
+                        className={`q-box_options ${selectedAnswer === option ? 'optionSelected' : ''}`}
+                        colorScheme={selectedAnswer === option ? (option === correctAnswer ? 'green' : 'red') : 'purple'}
+                        isDisabled={selectedAnswer !== null} 
+                        width="100%"
+                        _hover={selectedAnswer === null ? { bg: 'purple.600' } : {}}
+                    >
+                        <span className='option-icon'>{String.fromCharCode(65 + index)}</span>
+                        <span dangerouslySetInnerHTML={{ __html: option }} />
+                    </Button>
+                ))}
+            </div>
+            <div className="d-flex flex-wrap justify-content-between align-items-center mx-3">
+                <Badge colorScheme='purple'>{category}</Badge>
+                {showNextButton && (
+                    <div>
+                        {selectedAnswer === correctAnswer ? (
+                            <p style={{ color: 'green' }}>Correct!</p>
+                        ) : selectedAnswer !== null ? (
+                            <p style={{ color: 'red' }}>Incorrect. The correct answer was: {correctAnswer}</p>
+                        ) : null}
+                        <Button onClick={handleNextClick} colorScheme="blue" m={2}>
+                            Next
+                        </Button>
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+};
 
-export default QuestionBox
+export default QuestionBox;

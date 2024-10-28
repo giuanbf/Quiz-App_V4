@@ -1,3 +1,4 @@
+
 import { Avatar, Box, chakra, Flex, SimpleGrid, useColorModeValue, } from '@chakra-ui/react';
 import styled from 'styled-components'
 import { useNavigate } from 'react-router-dom';
@@ -7,7 +8,7 @@ import logo from './../../Assets/logo.png';
 const testimonials = [
     {
         content:
-            'This quiz web app is built using React JS. It can allow the user to select the criteria for their quiz from a list of options. The user can then proceed to answer the questions in the quiz and their performance will be tracked and shown in the scoreboard. Moreover, the app can be designed to be responsive and user-friendly.',
+            'Na próxima tela você terá 1 minuto para ler um processo e em seguida responder algumas perguntas sobre o que leu. Na sequencia, você irá ler um resumo de um outro processo que foi tratado através da Lexia e em seguida responder outro Quiz com relação à esse resumo.',
         avatar:
             logo,
     }
@@ -96,13 +97,13 @@ function TestimonialCard(props) {
     );
 }
 
-export default function About() {
+export default function Roles() {
 
     const navigate = useNavigate()
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        navigate('/about')
+        navigate('/process')
     }
 
     return (
@@ -119,7 +120,7 @@ export default function About() {
                     fontFamily={'Work Sans'}
                     fontWeight={'bold'}
                     color={useColorModeValue('gray.300', 'gray.50')}>
-                    Lexia Digital
+                    Regras do Jogo
                 </chakra.h1>
             </Box>
             <SimpleGrid
@@ -131,7 +132,7 @@ export default function About() {
                     <TestimonialCard {...cardInfo} key={index} index={index} />
                 ))}
             </SimpleGrid>
-            <Button onClick={handleSubmit}> Next </Button>
+            <Button onClick={handleSubmit}> Iniciar </Button>
         </Flex>
     );
 }
