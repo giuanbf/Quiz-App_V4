@@ -1,18 +1,18 @@
-// Quiz1.jsx
 import React, { useContext } from 'react';
 import QuizArea from '../QuizArea/QuizArea';
 import quizContext from '../../context/quizContext';
-import { useNavigate } from 'react-router-dom';  // Import useNavigate
+import { useNavigate } from 'react-router-dom';
 
 
 const Quiz1 = ({ questions, onQuizComplete }) => {
-    const { updateScore } = useContext(quizContext);
-    const navigate = useNavigate(); // Initialize useNavigate
+    const { updateScore, score } = useContext(quizContext);
+    const navigate = useNavigate();
 
     const handleQuiz1Complete = () => {
-        onQuizComplete();  // Call onQuizComplete from props, if needed.
+        onQuizComplete();
         navigate('/summary');
     };
+    console.log(score)
 
     return (
         <QuizArea

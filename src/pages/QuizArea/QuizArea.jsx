@@ -2,7 +2,6 @@
 import { useState, useCallback } from 'react';
 import QuestionBox from '../../components/QuestionBox/QuestionBox';
 import { useNavigate } from 'react-router-dom';
-import { Button } from '@chakra-ui/react';
 
 const QuizArea = ({ questions, onQuizComplete, onAnswerClick, quizType }) => {
     const navigate = useNavigate();
@@ -28,11 +27,18 @@ const QuizArea = ({ questions, onQuizComplete, onAnswerClick, quizType }) => {
     const handleOptionClick = useCallback((answer) => {
         setSelectedAnswer(answer);
         setShowFeedback(true);
-        onAnswerClick(answer);
-    }, [setSelectedAnswer, setShowFeedback, onAnswerClick]);
+
+        const isCorrect = answer === questions[currentQuestion].correct_answer;
+
+        if (isCorrect) {
+            onAnswerClick({ rightAnswers: 1 });
+        } else {
+            onAnswerClick({ wrongAnswers: 1 });
+        }
+
+    }, [currentQuestion, questions, onAnswerClick, setSelectedAnswer, setShowFeedback]);
 
     const currentQuestionData = questions[currentQuestion];
-
 
     return (
         <div className="container p-4">
@@ -48,21 +54,7 @@ const QuizArea = ({ questions, onQuizComplete, onAnswerClick, quizType }) => {
                     currentQuestion={currentQuestion}
                     totalQuestions={questions.length}
                     quizType={quizType}
-                    category={currentQuestionData.category || 'General Knowledge'}
                 />
-            )}
-            {showFeedback && (
-                <div>
-                    {selectedAnswer === currentQuestionData.correct_answer ? (
-                        <p style={{ color: 'green' }}>Correct!</p>
-                    ) : (
-                        <p style={{ color: 'red' }}>Incorrect. The correct answer was: {currentQuestionData.correct_answer}</p>
-                    )}
-
-                    <Button onClick={handleNext} colorScheme="blue" m={2}>
-                        Next
-                    </Button>
-                </div>
             )}
         </div>
     );

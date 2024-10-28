@@ -1,4 +1,3 @@
-// QuestionBox.jsx
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import './QuestionBox.css';
 import { Badge, Button } from '@chakra-ui/react';
@@ -60,9 +59,7 @@ const QuestionBox = ({
 
     const handleOptionClick = useCallback((option) => {
         audio.play();
-        if (onAnswerClick) {
-            onAnswerClick(option);
-        }
+        onAnswerClick(option); 
     }, [onAnswerClick]);
 
 
@@ -93,12 +90,12 @@ const QuestionBox = ({
                 {showNextButton && (
                     <div>
                         {selectedAnswer === correctAnswer ? (
-                            <p style={{ color: 'green' }}>Correct!</p>
+                            <p style={{ color: 'green' }}>Correto!</p>
                         ) : selectedAnswer !== null ? (
-                            <p style={{ color: 'red' }}>Incorrect. The correct answer was: {correctAnswer}</p>
+                            <p style={{ color: 'red' }}>Incorreto. A resposta é: {correctAnswer}</p>
                         ) : null}
                         <Button onClick={handleNextClick} colorScheme="blue" m={2}>
-                            Next
+                            Próxima
                         </Button>
                     </div>
                 )}
