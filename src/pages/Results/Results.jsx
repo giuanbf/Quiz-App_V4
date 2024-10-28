@@ -61,6 +61,7 @@ const Results = () => {
         ['Acerto', quiz1Score.rightAnswers],
         ['Erro', errorQuiz1],
     ];
+
     const chartData2 = [
         ['Lexia', 'Score'],
         ['Acerto', quiz2Score.rightAnswers],
@@ -70,11 +71,16 @@ const Results = () => {
     const chartOptions = {
         title: 'Processo',
         is3D: true,
+        pieSliceText: 'percentage',
+        legend: { position: 'center'},
+
     };
 
     const chartOptions2 = {
         title: 'Lexia',
         is3D: true,
+        pieSliceText: 'percentage',
+        legend: { position: 'center'}
     };
 
     return (
@@ -118,23 +124,21 @@ const Results = () => {
                     </div>
                 </div>
 
-                <div style={{display: 'flex'}}>
+                <div style={{ display: 'flex', justifyContent: 'center', gap: '5px' }}>
                     <Chart
                         chartType="PieChart"
                         data={chartData}
                         options={chartOptions}
-                        width={'150px'}
-                        height={'100px'}
-                        p={1}
+                        width={'200px'}
+                        height={'150px'}
                     />
 
                     <Chart
                         chartType="PieChart"
                         data={chartData2}
                         options={chartOptions2}
-                        width={'150px'}
-                        height={'100px'}
-                        p={1}
+                        width={'200px'}
+                        height={'150px'}
                     />
                 </div>
 
