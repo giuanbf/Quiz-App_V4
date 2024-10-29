@@ -1,21 +1,23 @@
 // Quiz2.jsx
-import React, { useContext } from 'react';
+import React, { useCallback } from 'react';
 import QuizArea from '../QuizArea/QuizArea';
-import quizContext from '../../context/quizContext';
 import { useNavigate } from 'react-router-dom';
 
 const Quiz2 = ({ questions, onQuizComplete }) => {
-    const { updateScore2, score2 } = useContext(quizContext);
     const navigate = useNavigate();
 
-    const handleQuiz2Complete = () => {
+    const handleQuiz2Complete = useCallback(() => {
         onQuizComplete();
         navigate('/results');
-    };
-console.log("Score2", score2)
+
+    }, [navigate, onQuizComplete]);
 
     return (
-        <QuizArea questions={questions} onQuizComplete={handleQuiz2Complete} onAnswerClick={updateScore2} quizType="summary" />
+        <QuizArea
+            questions={questions}
+            onQuizComplete={handleQuiz2Complete}
+            quizType="summary"
+        />
     );
 };
 

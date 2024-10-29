@@ -2,7 +2,8 @@
 import { Avatar, Box, chakra, Flex, SimpleGrid, useColorModeValue, } from '@chakra-ui/react';
 import styled from 'styled-components'
 import { useNavigate } from 'react-router-dom';
-import logo from './../../Assets/logo.png';
+// import logo from './../../Assets/logo.png';
+import lexiaLogo from './../../Assets/Artboard 2@2x.png';
 
 
 const testimonials = [
@@ -10,7 +11,7 @@ const testimonials = [
         content:
             'Na próxima tela você terá 1 minuto para ler um processo e em seguida responder algumas perguntas sobre o que leu. Na sequencia, você irá ler um resumo de um outro processo que foi tratado através da Lexia e em seguida responder outro Quiz com relação à esse resumo.',
         avatar:
-            logo,
+        lexiaLogo,
     }
 ];
 

@@ -2,16 +2,17 @@ import React from 'react';
 import {
   Box,
   Flex,
-  Avatar,
+  // Avatar,
   HStack,
   IconButton,
   useDisclosure,
   useColorModeValue,
   Stack,
   Text,
+  Image,
 } from '@chakra-ui/react';
 import { HamburgerIcon, CloseIcon, InfoIcon } from '@chakra-ui/icons';
-import logo from './../../Assets/logo.png';
+import logo from './../../Assets/LEXia_LOGO.svg';
 import { Link as ReachLink } from 'react-router-dom';
 import { FaHome } from 'react-icons/fa'; // Import the FaHome icon from react-icons/fa
 
@@ -39,7 +40,7 @@ export default function BetterNavbar() {
             onClick={isOpen ? onClose : onOpen}
           />
           <HStack spacing={8} alignItems="center">
-            <Avatar size="sm" src={logo} w={10} h={10} />
+            <Image src={logo} alt="Lexia Logo" boxSize="75px" />
             <HStack as="nav" spacing={4} display={{ base: 'none', md: 'flex' }}>
               <ReachLink
                 px={2}

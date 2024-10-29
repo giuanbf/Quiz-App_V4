@@ -1,9 +1,11 @@
-// QuizArea.jsx
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useContext } from 'react';
 import QuestionBox from '../../components/QuestionBox/QuestionBox';
 import { useNavigate } from 'react-router-dom';
+import quizContext from '../../context/quizContext';
 
-const QuizArea = ({ questions, onQuizComplete, onAnswerClick, quizType }) => {
+const QuizArea = ({ questions, onQuizComplete, quizType }) => {
+    const context = useContext(quizContext);
+    const { updateScore, updateScore2 } = context;
     const navigate = useNavigate();
     const [currentQuestion, setCurrentQuestion] = useState(0);
     const [selectedAnswer, setSelectedAnswer] = useState(null);
@@ -25,17 +27,18 @@ const QuizArea = ({ questions, onQuizComplete, onAnswerClick, quizType }) => {
     }, [currentQuestion, questions.length, onQuizComplete, quizType, navigate]);
 
     const handleOptionClick = useCallback((answer) => {
-
         setSelectedAnswer(answer);
         setShowFeedback(true);
 
         const isCorrect = answer === questions[currentQuestion].correct_answer;
-        if (isCorrect) {
-            onAnswerClick({ rightAnswers: 1 });
+
+        if (quizType === 'initial') {
+            updateScore(isCorrect ? { rightAnswers: 1 } : { wrongAnswers: 1 });
         } else {
-            onAnswerClick({ wrongAnswers: 1 });
+            updateScore2(isCorrect ? { rightAnswers: 1 } : { wrongAnswers: 1 });
         }
-    }, [currentQuestion, questions, onAnswerClick, setSelectedAnswer, setShowFeedback ]);
+
+    }, [currentQuestion, questions, quizType, updateScore, updateScore2, setSelectedAnswer, setShowFeedback]); // Ensure correct dependencies
 
     const currentQuestionData = questions[currentQuestion];
 

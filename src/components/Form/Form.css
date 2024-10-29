@@ -18,3 +18,7 @@
     align-items: center;
     justify-content: center;
 }
+
+.form-label{
+    margin-top: 1em;
+}

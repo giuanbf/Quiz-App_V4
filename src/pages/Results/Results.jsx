@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import quizContext from '../../context/quizContext';
 import { Chart } from 'react-google-charts';
 import {
@@ -12,14 +12,14 @@ import {
     SimpleGrid,
     Center,
     Button,
-    // Link,
 } from '@chakra-ui/react';
-// import { Link as RouterLink } from 'react-router-dom';
 import Data from "../../Data/data.json";
+import { saveQuizData } from "../../storageService";
+import lexiaLogo from './../../Assets/LEXia_LOGO.svg';
 
 const Results = () => {
     const context = useContext(quizContext);
-    const { score, score2 } = context;
+    const { score, score2, userData } = context;
 
     const quiz1Score = score;
     const quiz2Score = score2;
@@ -72,30 +72,34 @@ const Results = () => {
         title: 'Processo',
         is3D: true,
         pieSliceText: 'percentage',
-        legend: { position: 'center'},
-
+        legend: { position: 'center' },
     };
 
     const chartOptions2 = {
         title: 'Lexia',
         is3D: true,
         pieSliceText: 'percentage',
-        legend: { position: 'center'}
+        legend: { position: 'center' },
     };
+
+    useEffect(() => {
+        saveQuizData(userData, score, score2);
+    }, [userData, score, score2]);
 
     return (
         <Center h="100vh">
             <Box
-                p={6}
+                p={5}
                 maxWidth="600px"
                 borderWidth={1}
                 borderRadius={8}
                 boxShadow="lg"
                 bg="purple.500"
                 color="white"
-                m={1}
+                m={0}
             >
-                <Heading as="h2" size="xl" mb={4} >Sua Pontuação</Heading>
+                <img src={lexiaLogo} alt="Lexia_logo" />
+                <Heading as="h2" size="xl" mb={4} ml={12} >Sua Pontuação</Heading>
 
                 <div style={{display: 'flex'}}>
                     <div style={{ border: best === 'process' ? '1.5px solid rgb(255, 0, 255)' : 'none', marginBottom: '30px', padding: '15px', borderRadius: '15px', boxShadow:  best === 'process' ? '2px 1px 2.5px rgb(255, 0, 255)' : 'none'}}>
@@ -158,7 +162,7 @@ const Results = () => {
 
                 <SimpleGrid columns={4} spacing={4} mt={6}>
                     <a href="/">
-                        <Button colorScheme="purple" mt={4}>Home</Button>
+                        <Button colorScheme="purple" mt={4}>Início</Button>
                     </a>
                 </SimpleGrid>
 
