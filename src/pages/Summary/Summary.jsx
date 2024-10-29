@@ -2,6 +2,7 @@
 import React, { useContext, useEffect, useState, useCallback } from 'react';
 import '../../components/QuestionBox/QuestionBox.css';
 import quizContext from '../../context/quizContext';
+import ReactMarkdown from 'react-markdown';
 
 const Summary = ({ onComplete }) => {
     const [timer, setTimer] = useState(10); // Set your desired initial timer value
@@ -39,7 +40,7 @@ const Summary = ({ onComplete }) => {
                 <div className="q-box_timer">{timer}s</div>
             </div>
             <div className="q-box_content">
-                {content}
+                {content && <ReactMarkdown>{content}</ReactMarkdown>}
             </div>
         </div>
     );
